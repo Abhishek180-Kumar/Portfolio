@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoanMart — Case Study | Abhishek Kumar</title>
+<meta name="description" content="How GoanMart, a live production marketplace with 98 pages and 67 REST APIs, was solo-architected, built and shipped — problem, architecture, AI layer, performance and lessons learned.">
+<link rel="canonical" href="https://abhishek-kumar.dev/projects/goanmart.html">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<nav class="nav scrolled" id="nav">
+  <div class="container nav-inner">
+    <a href="../index.html" class="brand"><span class="dot"></span>Abhishek Kumar</a>
+    <div class="nav-links">
+      <a href="../index.html#work">Work</a>
+      <a href="../index.html#about">About</a>
+      <a href="../index.html#contact">Contact</a>
+    </div>
+    <a class="nav-cta" href="https://goanmart.in" target="_blank" rel="noopener">View Live ↗</a>
+  </div>
+</nav>
+
+<div class="cs-nav">
+  <div class="container cs-nav-inner">
+    <a href="#problem">Problem</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#roles">Roles</a>
+    <a href="#realtime">Real-time</a>
+    <a href="#ai">AI Layer</a>
+    <a href="#payments">Payments</a>
+    <a href="#performance">Performance</a>
+    <a href="#challenges">Challenges</a>
+    <a href="#learned">Lessons</a>
+    <a href="#next">Next</a>
+  </div>
+</div>
+
+<main>
+  <header class="container cs-hero">
+    <a href="../index.html#work" class="cs-back">← Back to work</a>
+    <div class="badge-row">
+      <span class="badge live">● Live in production</span>
+      <span class="badge">Solo-built</span>
+      <span class="badge">v5.0.0</span>
+    </div>
+    <h1 class="cs-title">GoanMart</h1>
+    <p class="cs-sub">A role-based e-commerce marketplace, solo-architected and shipped from database schema to deployed API — 98 pages, 67 REST endpoints, real-time messaging, and an AI recommendation layer, serving real sellers and buyers today.</p>
+    <div class="hero-actions" style="margin-bottom:0;">
+      <a class="btn btn-primary" href="https://goanmart.in" target="_blank" rel="noopener">View Live ↗</a>
+      <a class="btn btn-ghost" href="https://github.com/Abhishek180-Kumar" target="_blank" rel="noopener">Source Code ↗</a>
+    </div>
+    <div class="cs-meta">
+      <div><b>Role</b>Solo full-stack developer</div>
+      <div><b>Stack</b>React, Node.js, Express, MongoDB, Socket.io</div>
+      <div><b>Timeline</b>Ongoing, actively maintained</div>
+      <div><b>Scope</b>98 pages · 67 REST APIs · 3 roles</div>
+    </div>
+  </header>
+
+  <div class="pf-visual reveal" style="max-width:var(--maxw, 640px); margin:0 auto 0; border:1px solid var(--border); border-radius:var(--radius-lg); min-height:340px;">
+    <div class="product-shot goanmart-shot" aria-label="GoanMart product walkthrough preview">
+      <div class="shot-window">
+        <div class="shot-bar"><span></span><span></span><span></span><b>GoanMart product walkthrough preview</b></div>
+            <div class="gm-layout">
+              <aside>
+                <strong>GoanMart</strong>
+                <span>Admin</span><span>Seller</span><span>Buyer</span><span>Messages</span>
+              </aside>
+              <div class="gm-main">
+                <div class="gm-top"><span>Marketplace operations</span><b>Live</b></div>
+                <div class="gm-cards"><i></i><i></i><i></i></div>
+                <div class="gm-products"><span></span><span></span><span></span><span></span></div>
+              </div>
+            </div>      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM -->
+  <section class="cs-block container" id="problem">
+    <div class="eyebrow">01 — The Problem</div>
+    <h2>Local sellers had no lightweight way online.</h2>
+    <p>Small sellers in Tier-2/3 markets are largely locked out of e-commerce: existing platforms are built for large catalogs and national logistics, not a single seller with a handful of products and a local buyer base. GoanMart started as an attempt to fix that — a marketplace light enough for one seller to run, with real-time communication instead of a support ticket queue.</p>
+    <h3>The product vision</h3>
+    <p>Rather than one generic storefront, GoanMart is built around three cooperating roles — Admin, Seller and Buyer — each with its own dashboard, permissions and workflows, all sharing a single backend and data model.</p>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section class="cs-block container" id="architecture">
+    <div class="eyebrow">02 — Architecture</div>
+    <h2>Explore the architecture.</h2>
+    <p>Click a layer to see what it does. The request path is intentionally simple — one API layer in front of one database — so that three different roles can be served without three different backends.</p>
+
+    <div class="arch-diagram reveal">
+      <div class="arch-flow">
+        <div class="arch-node active" data-detail="React + Vite frontend, split by role (Admin / Seller / Buyer), with React Query handling server-state caching.">
+          <span>Client — React / Vite</span><span class="tag">frontend</span>
+        </div>
+        <div class="arch-arrow">↓ HTTPS</div>
+        <div class="arch-node" data-detail="67 REST endpoints behind JWT/refresh-token auth, rate-limited and validated per role before hitting business logic.">
+          <span>API Layer — Express</span><span class="tag">gateway</span>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node" data-detail="Modular MVC services — orders, listings, payments, messaging and notifications each isolated as their own service module.">
+          <span>MVC Services</span><span class="tag">business logic</span>
+        </div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node" data-detail="MongoDB with a role-aware schema — Admin, Seller and Buyer documents share references but keep independent permission boundaries.">
+          <span>MongoDB</span><span class="tag">data</span>
+        </div>
+        <div class="arch-arrow">+ supporting services</div>
+        <div class="arch-branches">
+          <span class="arch-branch">Socket.io</span>
+          <span class="arch-branch">Razorpay</span>
+          <span class="arch-branch">Cloudinary</span>
+          <span class="arch-branch">Firebase FCM</span>
+          <span class="arch-branch">LLM APIs</span>
+        </div>
+      </div>
+      <div class="arch-detail" id="archDetail">React + Vite frontend, split by role (Admin / Seller / Buyer), with React Query handling server-state caching.</div>
+    </div>
+  </section>
+
+  <!-- ROLES + AUTH -->
+  <section class="cs-block container" id="roles">
+    <div class="eyebrow">03 — Role-Based System &amp; Auth</div>
+    <div class="cs-two">
+      <div>
+        <h2>Three roles, one backend.</h2>
+        <p>Admin, Seller and Buyer each get a distinct dashboard and permission set, but they're served by the same Express application and MongoDB instance. Role checks happen at the middleware layer before any controller logic runs, so a Buyer request can never reach Seller-only routes regardless of what the client sends.</p>
+      </div>
+      <div>
+        <h2>Authentication</h2>
+        <p>Access is controlled with JWT access tokens plus refresh tokens, so sessions stay short-lived without forcing constant re-logins. Every one of the 67 endpoints sits behind this layer — there's no unauthenticated write path anywhere in the API.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- REALTIME -->
+  <section class="cs-block container" id="realtime">
+    <div class="eyebrow">04 — Real-Time Communication</div>
+    <h2>Seller ↔ Buyer chat over Socket.io.</h2>
+    <p>Instead of routing every question through support tickets, buyers message sellers directly in a real-time thread backed by Socket.io, with delivery falling back to Firebase Cloud Messaging push notifications when a user is offline. This was one of the trickier pieces to get right — reconnection handling and message ordering across dropped connections needed real edge-case testing, not just the happy path.</p>
+  </section>
+
+  <!-- AI LAYER -->
+  <section class="cs-block container" id="ai">
+    <div class="eyebrow">05 — The AI Layer</div>
+    <h2>LLMs as product features, not gimmicks.</h2>
+    <p>Two LLM-backed features ship in production: a product recommendation engine that surfaces relevant listings based on browsing and purchase signals, and voice ordering, which lets buyers place an order by speaking instead of navigating menus. Prompt engineering was also used throughout development itself — accelerating debugging, boilerplate and documentation — but the two features above are the parts users actually touch.</p>
+  </section>
+
+  <!-- PAYMENTS -->
+  <section class="cs-block container" id="payments">
+    <div class="eyebrow">06 — Payment Architecture</div>
+    <h2>Razorpay, wired end to end.</h2>
+    <p>Checkout runs through Razorpay for payment collection, with Cloudinary handling product and listing media so the API layer never touches raw file uploads directly. Order state transitions (placed → paid → fulfilled) are tracked server-side so a failed or pending payment can never silently mark an order complete.</p>
+  </section>
+
+  <!-- PERFORMANCE -->
+  <section class="cs-block container" id="performance">
+    <div class="eyebrow">07 — Performance</div>
+    <h2>~40% faster loads.</h2>
+    <p>Frontend performance work centered on React Query for server-state caching (cutting redundant refetches) and Vite's build pipeline for smaller, faster-loading bundles. Together these changes cut measured load times by roughly 40% compared to the earlier build.</p>
+    <ul>
+      <li>React Query for caching and de-duplicating API calls across dashboards</li>
+      <li>Vite for faster builds and smaller production bundles</li>
+      <li>Indexed MongoDB queries on high-frequency read paths</li>
+    </ul>
+  </section>
+
+  <!-- CHALLENGES + DECISIONS -->
+  <section class="cs-block container" id="challenges">
+    <div class="eyebrow">08 — Engineering Challenges &amp; Decisions</div>
+    <div class="cs-two">
+      <div>
+        <h2>What was hard</h2>
+        <ul>
+          <li>Keeping three roles' permissions consistent as new features were added — a missed check in one route could leak Seller data to Buyer views.</li>
+          <li>Real-time messaging reliability across reconnects and background tabs.</li>
+          <li>Balancing AI feature latency (recommendations, voice ordering) against page load budgets.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Decisions I'd defend</h2>
+        <ul>
+          <li>One MongoDB instance with role-aware schemas over separate databases per role — simpler to reason about, easier to keep consistent solo.</li>
+          <li>JWT + refresh tokens over session cookies, for a mobile-friendly API surface.</li>
+          <li>Modular MVC services instead of a single monolithic controller file, so features stay isolated as the codebase grows.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- LESSONS -->
+  <section class="cs-block container" id="learned">
+    <div class="eyebrow">09 — Lessons Learned</div>
+    <p class="quote-block">Shipping solo means every shortcut becomes technical debt you personally have to repay.</p>
+    <p>Building and operating GoanMart alone forced discipline that a team would otherwise enforce — writing Postman tests before merging, auditing routes for dead code, and treating performance regressions as bugs, not later cleanup. The biggest lesson: a role-based system needs its permission model designed early, because retrofitting it later touches almost every route.</p>
+  </section>
+
+  <!-- NEXT -->
+  <section class="cs-block container" id="next">
+    <div class="eyebrow">10 — What's Next</div>
+    <h2>Next improvements</h2>
+    <ul>
+      <li>Formal caching layer (Redis) for the highest-traffic read endpoints — not yet implemented.</li>
+      <li>Automated end-to-end test coverage alongside the existing Postman suite.</li>
+      <li>Expanding the recommendation engine with more purchase-history signal.</li>
+    </ul>
+  </section>
+
+  <div class="cs-footer-cta">
+    <a class="btn btn-primary" href="https://goanmart.in" target="_blank" rel="noopener">View GoanMart Live ↗</a>
+    <a class="btn btn-ghost" href="../index.html#work" style="margin-left:12px;">← Back to all work</a>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>Abhishek Kumar — Full-Stack Developer &amp; AI Builder</div>
+    <div class="footer-links">
+      <a href="https://github.com/Abhishek180-Kumar" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://linkedin.com/in/abhishek-kumar-b07168291" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:abhishekku919917@gmail.com">Email</a>
+    </div>
+    <div id="year">Designed &amp; built by Abhishek Kumar.</div>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
