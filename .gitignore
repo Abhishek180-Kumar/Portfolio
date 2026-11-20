@@ -2,3 +2,5 @@ node_modules/
 package-lock.json
 *.report.html
 *.backup
+*.report.html
+node_modules/
