@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GoanMart — Case Study | Abhishek Kumar</title>
-<meta name="description" content="How GoanMart, a live production marketplace with 98 pages and 67 REST APIs, was solo-architected, built and shipped — problem, architecture, AI layer, performance and lessons learned.">
+<meta name="description" content="How GoanMart, a live production marketplace with multiple pages and REST APIs, was architected, built and shipped — problem, architecture, AI layer, performance and lessons learned.">
 <link rel="canonical" href="https://abhishek-kumar.dev/projects/goanmart.html">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,20 +46,20 @@
     <a href="../index.html#work" class="cs-back">← Back to work</a>
     <div class="badge-row">
       <span class="badge live">● Live in production</span>
-      <span class="badge">Solo-built</span>
+      <span class="badge">Full-stack</span>
       <span class="badge">v5.0.0</span>
     </div>
     <h1 class="cs-title">GoanMart</h1>
-    <p class="cs-sub">A role-based e-commerce marketplace, solo-architected and shipped from database schema to deployed API — 98 pages, 67 REST endpoints, real-time messaging, and an AI recommendation layer, serving real sellers and buyers today.</p>
+    <p class="cs-sub">A role-based e-commerce marketplace, architected and shipped from database schema to deployed API — multiple pages, REST endpoints, real-time messaging, and an AI recommendation layer, serving real sellers and buyers today.</p>
     <div class="hero-actions" style="margin-bottom:0;">
       <a class="btn btn-primary" href="https://goanmart.in" target="_blank" rel="noopener">View Live ↗</a>
       <a class="btn btn-ghost" href="https://github.com/Abhishek180-Kumar" target="_blank" rel="noopener">Source Code ↗</a>
     </div>
     <div class="cs-meta">
-      <div><b>Role</b>Solo full-stack developer</div>
+      <div><b>Role</b>Full-stack developer</div>
       <div><b>Stack</b>React, Node.js, Express, MongoDB, Socket.io</div>
       <div><b>Timeline</b>Ongoing, actively maintained</div>
-      <div><b>Scope</b>98 pages · 67 REST APIs · 3 roles</div>
+      <div><b>Scope</b>Multi-role · REST APIs</div>
     </div>
   </header>
 
@@ -102,7 +102,7 @@
           <span>Client — React / Vite</span><span class="tag">frontend</span>
         </div>
         <div class="arch-arrow">↓ HTTPS</div>
-        <div class="arch-node" data-detail="67 REST endpoints behind JWT/refresh-token auth, rate-limited and validated per role before hitting business logic.">
+        <div class="arch-node" data-detail="multiple REST endpoints behind JWT/refresh-token auth, rate-limited and validated per role before hitting business logic.">
           <span>API Layer — Express</span><span class="tag">gateway</span>
         </div>
         <div class="arch-arrow">↓</div>
@@ -136,7 +136,7 @@
       </div>
       <div>
         <h2>Authentication</h2>
-        <p>Access is controlled with JWT access tokens plus refresh tokens, so sessions stay short-lived without forcing constant re-logins. Every one of the 67 endpoints sits behind this layer — there's no unauthenticated write path anywhere in the API.</p>
+        <p>Access is controlled with JWT access tokens plus refresh tokens, so sessions stay short-lived without forcing constant re-logins. Every API endpoint sits behind this layer — there's no unauthenticated write path anywhere in the API.</p>
       </div>
     </div>
   </section>
@@ -189,7 +189,7 @@
       <div>
         <h2>Decisions I'd defend</h2>
         <ul>
-          <li>One MongoDB instance with role-aware schemas over separate databases per role — simpler to reason about, easier to keep consistent solo.</li>
+          <li>One MongoDB instance with role-aware schemas over separate databases per role — simpler to reason about, easier to keep consistent as one developer.</li>
           <li>JWT + refresh tokens over session cookies, for a mobile-friendly API surface.</li>
           <li>Modular MVC services instead of a single monolithic controller file, so features stay isolated as the codebase grows.</li>
         </ul>
@@ -200,7 +200,7 @@
   <!-- LESSONS -->
   <section class="cs-block container" id="learned">
     <div class="eyebrow">09 — Lessons Learned</div>
-    <p class="quote-block">Shipping solo means every shortcut becomes technical debt you personally have to repay.</p>
+    <p class="quote-block">Shipping alone means every shortcut becomes technical debt you personally have to repay.</p>
     <p>Building and operating GoanMart alone forced discipline that a team would otherwise enforce — writing Postman tests before merging, auditing routes for dead code, and treating performance regressions as bugs, not later cleanup. The biggest lesson: a role-based system needs its permission model designed early, because retrofitting it later touches almost every route.</p>
   </section>
 
